@@ -70,18 +70,18 @@ module Utils =
 
     let calculateBias alpha (error: dM) beta (bias: dM) =
         let DataType = CUDNNInterop.cudnnDataType_t.CUDNN_DATA_FLOAT;
-        let TensorFormat = CUDNNInterop.cudnnTensorFormat_t.CUDNN_TENSOR_NCHW;
+        let TensorFormat = CUDNNInterop.cudnnTensorFormat_t.CUDNN_TENSOR_NHWC;
         dstTensorDesc.Set4D(TensorFormat, DataType, 1, error.num_rows, 1, error.num_cols)
         biasTensorDesc.Set4D(TensorFormat, DataType, 1, bias.num_rows, 1, bias.num_cols)
-        cudnn.ConvolutionBackwardBias(alpha/float32 error.num_cols,dstTensorDesc,error.dArray.Ptr,beta,biasTensorDesc,bias.dArray.Ptr)
+        cudnn.ConvolutionBackwardBias(alpha,dstTensorDesc,error.dArray.Ptr,beta,biasTensorDesc,bias.dArray.Ptr)
 
     /// Sets beta (the momentum flag variable) to 1.0f after it is done.
     let dynamicCalculateBias alpha (error: dM) beta (bias: dM) =
         let DataType = CUDNNInterop.cudnnDataType_t.CUDNN_DATA_FLOAT;
-        let TensorFormat = CUDNNInterop.cudnnTensorFormat_t.CUDNN_TENSOR_NCHW;
+        let TensorFormat = CUDNNInterop.cudnnTensorFormat_t.CUDNN_TENSOR_NHWC;
         dstTensorDesc.Set4D(TensorFormat, DataType, 1, error.num_rows, 1, error.num_cols)
         biasTensorDesc.Set4D(TensorFormat, DataType, 1, bias.num_rows, 1, bias.num_cols)
-        cudnn.ConvolutionBackwardBias(alpha/float32 error.num_cols,dstTensorDesc,error.dArray.Ptr,!beta,biasTensorDesc,bias.dArray.Ptr)
+        cudnn.ConvolutionBackwardBias(alpha,dstTensorDesc,error.dArray.Ptr,!beta,biasTensorDesc,bias.dArray.Ptr)
         beta := 1.0f
 
 
