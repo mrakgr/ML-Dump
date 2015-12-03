@@ -1,4 +1,4 @@
-﻿#r @"C:\Users\Marko\Documents\Visual Studio 2015\Projects\Automatic Differentiation\packages\DiffSharp.0.7.4\lib\net46\DiffSharp.dll"
+﻿#r @"C:\DiffSharp-master\src\DiffSharp\bin\Debug\DiffSharp.dll"
 #r @"C:\Users\Marko\Documents\Visual Studio 2015\Projects\Automatic Differentiation\packages\FSharp.Quotations.Evaluator.1.0.6\lib\net40\FSharp.Quotations.Evaluator.dll"
 #r @"C:\Users\Marko\Documents\Visual Studio 2015\Projects\Automatic Differentiation\packages\FSharp.Charting.0.90.13\lib\net40\FSharp.Charting.dll"
 #r @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6\System.Windows.Forms.DataVisualization.dll"
@@ -133,12 +133,12 @@ let neg_target_plus_one = 1.0f-XORy
 // This one works correctly.
 let neg_a2 = -a2
 let neg_a2_plus_one = neg_a2+1.0f
-// DM [[0.30438143f; -1.4398216f; -1.53813016f; 0.297133237f]]
+// a2.A = DM [[0.30438143f; -1.4398216f; -1.53813016f; 0.297133237f]]
 *)
 
 // This one works incorrectly.
 let neg_a2_plus_one = 1.0f - a2
-// DM [[-0.30438143f; -1.4398216f; -1.53813016f; -0.297133237f]]
+// a2.A = DM [[-0.30438143f; -1.4398216f; -1.53813016f; -0.297133237f]]
 
 let log_neg_a2_plus_one = DM.Log neg_a2_plus_one
 
@@ -151,4 +151,3 @@ let r = -0.25f*s
 
 r |> reverseProp (D 1.0f)
 
-a2.A
