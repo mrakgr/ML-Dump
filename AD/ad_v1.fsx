@@ -1,7 +1,7 @@
 ﻿// My first attempt at making reverse mode automatic differentiation.
 
 // Everything here works well as long as there are no branches in the graph. I still have yet to implement fanout counters.
-// Another problem is that the way I've structured the functions pretty much crushes the GC.
+
 
 #I @"C:\F# Packages\packages\Alea.CUDA.2.2.0.3307\lib\net40"
 #I @"C:\F# Packages\packages\Alea.CUDA.IL.2.2.0.3307\lib\net40"
@@ -117,6 +117,41 @@ let sgeam2 transa transb (alpha: float32) (A:dMatrix) beta (B:dMatrix) (C:dMatri
 
 
 let inline copy_matrix A = sgeam nT nT 1.0f A 0.0f A
+
+type DeviceUnaryMapSumModule(target, op:Expr<float32 -> float32 >) =
+    inherit GPUModule(target)
+
+    let block_size = 128
+    let blockReducer = BlockReduce.RakingCommutativeOnly<float32>(dim3(block_size,1,1),worker.Device.Arch)
+
+    new (op:Expr<float32 -> float32 >) =
+        new DeviceUnaryMapSumModule(GPUModuleTarget.Worker(worker), op)
+
+    [<Kernel;ReflectedDefinition>]
+    member this.Kernel (n:int) (x:deviceptr<float32>) (z: deviceptr<float32>) =
+        let temp_storage = blockReducer.TempStorage.AllocateShared()
+        let start = blockIdx.x * blockDim.x + threadIdx.x
+
+        let stride = gridDim.x * blockDim.x
+        let mutable i = start 
+        let mutable acc = __default_value<float32>()
+        while i < n do
+            acc <- acc + (__eval(op) x.[i])
+            i <- i + stride
+        let out_partial = blockReducer.Reduce(temp_storage, acc, fun a b -> a+b)
+        if threadIdx.x = 0 then (__atomic_add z out_partial) |> ignore
+            
+    member this.A(n:int, x:deviceptr<float32>) =
+        let numSm = this.GPUWorker.Device.Attributes.MULTIPROCESSOR_COUNT
+        let gridSize = min (2*numSm*(1024/block_size)) (divup n block_size)
+        let lp = LaunchParam(gridSize, block_size)
+        use z = worker.Malloc([|0.0f|])
+        this.GPULaunch <@ this.Kernel @> lp n x z.Ptr
+        z.GatherScalar()
+
+    member this.A(x: dMatrix) =
+        this.A(x.dArray.Length, x.dArray.Ptr)
+
 
 /// Unary transform module for applying single functions to an array.
 type DeviceUnaryTransformModule(target, op:Expr<float32 -> float32>) =
@@ -417,11 +452,11 @@ let square a =
     let va = a.r.P
     s va
 
-let sumModule = (new DeviceReduceModule<float32>(GPUModuleTarget.Worker(worker),<@ (+) @>)).Create(2e9 |> int)
+let sumModule = new DeviceUnaryMapSumModule <@ fun x -> x @>
 let sumErrorModule = setModule//new DeviceUnaryCoefTransformModule <@ fun error _ -> error @> // I made a mistake here thinking it was error*a. Really the derivative of the sum is just the error.
 let sum a =
     let s (va: dMatrix) =
-        let c = sumModule.Reduce(va.dArray.Ptr,va.dArray.Length)
+        let c = sumModule.A(va)
         let fb out = sumErrorModule.A(out,va)
         DfR_Df_DM(Df_rec.create c,fb,a)
     let va = a.r.P
@@ -479,6 +514,7 @@ let nodes = [|w1;bias1;w2;bias2|]
 let f_batch_size = 4.0f
 let learning_rate = 100.0f / f_batch_size
 
+#time
 let test num_iters =
     for i=1 to num_iters do
         let z1 = addb (matmult w1 input) bias1
@@ -507,5 +543,8 @@ let test num_iters =
         r4.DisposeAll()
 
         //printfn "%A" (w2.r.A.dArray.Gather())
-test 300
+test 1000
+GC.Collect()
+test 1000
+#time
 
