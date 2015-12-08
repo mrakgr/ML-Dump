@@ -2,7 +2,7 @@ The stuff I've written over the last four months for machine learning. Some of t
 
 Given the great difficulty of writting the more complex algorithms, right now I am studying <a href="https://en.wikipedia.org/wiki/Automatic_differentiation">Automatic Differentiation</a>.
 
-I plan to write a bunch of tutorials based on the above after new years' which should put this dump in order. </del>Hopefully I will be able to complete the LSTM using the reverse mode AD that I've made myself by then.<del>
+I plan to write a bunch of tutorials based on the above after new years' which should put this dump in order. <del>Hopefully I will be able to complete the LSTM using the reverse mode AD that I've made myself by then.</del>
 
 Done. In the AD directory, ad_utils_v3.fsx has everything one might need to use the basic reverse mode AD on the GPU and the ad_lstm_v3.fsx has an example of use. The API is Spartan, but I've verified what it works. What I failed to do for the entire month of November I did in a week by moving up a level in abstraction.
 
