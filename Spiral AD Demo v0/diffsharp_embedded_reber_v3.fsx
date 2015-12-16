@@ -1,4 +1,6 @@
-﻿#r "../packages/DiffSharp.0.7.6/lib/net46/DiffSharp.dll"
+﻿// DiffSharp example.
+
+#r "../packages/DiffSharp.0.7.6/lib/net46/DiffSharp.dll"
 #r "../packages/FSharp.Quotations.Evaluator.1.0.6/lib/net40/FSharp.Quotations.Evaluator.dll"
 
 #r "../packages/FSharp.Charting.0.90.13/lib/net40/FSharp.Charting.dll"

@@ -1,4 +1,6 @@
-﻿#load "ad_utils_v3.fsx"
+﻿// Old reverse AD library example.
+
+#load "ad_utils_v3.fsx"
 open Ad_utils_v3
 
 #r "../packages/FSharp.Charting.0.90.13/lib/net40/FSharp.Charting.dll"

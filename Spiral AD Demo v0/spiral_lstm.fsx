@@ -1,4 +1,6 @@
-﻿#load "ad_utils_spiral.fsx"
+﻿// Spiral reverse AD example.
+
+#load "ad_utils_spiral.fsx"
 open Ad_utils_spiral
 
 #r "../packages/FSharp.Charting.0.90.13/lib/net40/FSharp.Charting.dll"

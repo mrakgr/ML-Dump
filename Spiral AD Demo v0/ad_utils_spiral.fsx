@@ -1,7 +1,8 @@
-﻿#r "../packages/ManagedCuda-75-x64.7.5.7/lib/net45/x64/ManagedCuda.dll"
+﻿// The Spiral library v0. Basic reverse mode AD on the GPU.
+
+#r "../packages/ManagedCuda-75-x64.7.5.7/lib/net45/x64/ManagedCuda.dll"
 #r "../packages/ManagedCuda-75-x64.7.5.7/lib/net45/x64/NVRTC.dll"
 #r "../packages/ManagedCuda-75-x64.7.5.7/lib/net45/x64/CudaBlas.dll"
-// The Spiral library v0. Basic reverse mode AD on the GPU.
 
 #r "../packages/ManagedCuda-75-x64.7.5.7/lib/net45/x64/CudaRand.dll"
 #r "../packages/ManagedCuda-CudaDNN.3.0/lib/net45/CudaDNN.dll"
