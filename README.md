@@ -13,3 +13,11 @@ The <a href="http://diffsharp.github.io/DiffSharp/">DiffSharp library</a> has mo
 The majority of ML libraries that exist right now are like mushrooms springing up after a rain and will wither away in a few days, but I think the AD focused ones (like Tensorflow and DiffSharp, but not Theano) have the potential for lasting use.
 
 Well, since I got this much use from moving up a level in abstraction, I am currently interested in learning more AD. After that I will write a bunch of tutorials on ML and get this dump in order before moving on, maybe onto the DiffSharp backend.
+
+UPDATE(12/16/2015): I rewrote the ad_utils_v3 using ManagedCuda instead of Alea and amazingly, it is 4.5 times faster. The first version of the new basic reverse AD library can be found in the Spiral Demo v0 folder along with comparisons using DiffSharp and my old library using Alea.
+
+The embedded Reber grammar that I trained the LSTM on is basically just a long sequence of small matrix multiplies (like 64x310), so it might be even relatively faster compared to the CPU version using larger matrices. I am not sure whether Alea is slow or whether the move to cuBLAS 7.5 is the reason for the dramatic speedup, but I like it. This was definitely a lucky windfall for me as without deciding to do the backend in Cuda for DiffSharp I would never have figured out how much I was missing out on.
+
+The basic reverse AD library Spiral is very much usable now despite its infancy and I hope that in the future I can implement parts of it into the DiffSharp library to serve as its backend.
+
+The demo directory is likely to grow stale with time, so I'll dedicate a Github repository to it and post a link here.
